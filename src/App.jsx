@@ -1,26 +1,28 @@
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import React, { useState } from "react";
+import { SearchBar } from "./components/SearchBar";
+import { CountriesSection } from "./components/countriesSection";
+import { FilterSection } from "./components/filterSection";
+import { Header } from "./components/header";
+import "./index.css";
 
 function App() {
+  const [isDarkMode, setDarkMode] = useState(false);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!isDarkMode);
+  };
+
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className={`${isDarkMode ? "text-black" : "text-white"} h-screen w-screen`}>
+      <Header isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+      <div className={` ${isDarkMode ? "bg-[white]" : "bg-[#202c36]"}`}>
+        <div className={`${isDarkMode ? "bg-[white]" : "bg-[#202c36]"} flex flex-col gap-5 lg:flex-row pt-9 justify-between`}>
+          <SearchBar isDarkMode={isDarkMode} />
+          <FilterSection isDarkMode={isDarkMode} />
+        </div>
+        <CountriesSection isDarkMode={isDarkMode} />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card" style={{ fontSize: "28px" }}>
-        <p>Enjoy building this project</p>
-      </div>
-      <p style={{ fontSize: "24px" }} className="read-the-docs">
-        Countries API project
-      </p>
-    </>
+    </div>
   );
 }
 
