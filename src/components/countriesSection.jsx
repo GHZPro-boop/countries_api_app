@@ -1,46 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { apiUrl } from "../api/api";
 
-export const CountriesSection = ({ isDarkMode }) => {
-    const [countries, setCountries] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState("");
-
-    useEffect(() => {
-        getAllCountries();
-    }, []);
-
-    const getAllCountries = async () => {
-        try {
-            const res = await fetch(`${apiUrl}/all`);
-
-            if (!res.ok) throw new Error("Something went wrong!");
-
-            const data = await res.json();
-
-            // Sort countries alphabetically by name
-            const sortedCountries = data.sort((a, b) => {
-                const nameA = a.name.common.toUpperCase();
-                const nameB = b.name.common.toUpperCase();
-                if (nameA < nameB) {
-                    return -1;
-                }
-                if (nameA > nameB) {
-                    return 1;
-                }
-                return 0;
-            });
-
-            setCountries(sortedCountries);
-            setIsLoading(false);
-        } catch (error) {
-            setIsLoading(false);
-            setError(error.message);
-        }
-    };
-
-
+export const CountriesSection = ({ isDarkMode, countries, isLoading, error, input }) => {
 
     return (
         <div className={`grid grid-cols-1 lg:grid-cols-4 gap-6 h-full mx-[10%] lg:mx-[5%] my-8 ${isDarkMode ? "bg-[white]" : "bg-[#202c36]"
@@ -48,7 +9,9 @@ export const CountriesSection = ({ isDarkMode }) => {
         >
             {isLoading && !error && <h4>Loading........</h4>}
             {error && !isLoading && <h4>{error}</h4>}
-            {countries.map((country) => (
+            {countries.filter((country) => {
+                return input.toLowerCase() === "" ? country : country.name.common.toLowerCase().includes(input);
+            }).map((country) => (
                 <Link to={`/country/${country.name.common}`} key={country.name.common}>
                     <div className={`shadow-lg ${isDarkMode ? "text-black" : "text-white"}`}>
                         <div>

@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { CiSearch } from "react-icons/ci"
 
-export const SearchBar = ({ isDarkMode, onSearch }) => {
-    const [input, setInput] = useState('')
+export const SearchBar = ({ isDarkMode, onSearch, input, setInput }) => {
     const [error, setError] = useState("");
 
     const submitHandler = (e) => {

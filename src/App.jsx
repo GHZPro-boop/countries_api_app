@@ -13,9 +13,39 @@ function App() {
   const [countries, setCountries] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [input, setInput] = useState("");
 
   const toggleDarkMode = () => {
     setDarkMode(!isDarkMode);
+  };
+
+  const getAllCountries = async () => {
+    try {
+      const res = await fetch(`${apiUrl}/all`);
+
+      if (!res.ok) throw new Error("Something went wrong!");
+
+      const data = await res.json();
+
+      // Sort countries alphabetically by name
+      const sortedCountries = data.sort((a, b) => {
+        const nameA = a.name.common.toUpperCase();
+        const nameB = b.name.common.toUpperCase();
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+        return 0;
+      });
+
+      setCountries(sortedCountries);
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      setError(error.message);
+    }
   };
 
   const getCountryByName = async (countryName) => {
@@ -51,25 +81,23 @@ function App() {
   };
 
   useEffect(() => {
-    const defaultSearchQuery = "all";
-
-    getCountryByName(defaultSearchQuery);
+    getAllCountries();
+    console.log(countries);
   }, []);
-
 
   return (
     <Router>
       <div className={`${isDarkMode ? "text-black" : "text-white"} h-screen w-screen`}>
         <Header isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
         <div className={` ${isDarkMode ? "bg-[white]" : "bg-[#202c36]"}`}>
-          <div className={`flex flex-col gap-5 lg:flex-row pt-9 justify-between mx-[5%] lg:mx-[10%]`}>
-            <SearchBar isDarkMode={isDarkMode} onSearch={getCountryByName} />
+          <div className={`flex flex-col gap-5 lg:flex-row pt-24 justify-between mx-[5%] lg:mx-[10%]`}>
+            <SearchBar isDarkMode={isDarkMode} onSearch={getCountryByName} setInput={setInput} input={input} />
             <FilterSection isDarkMode={isDarkMode} onSelect={getCountryByRegion} />
           </div>
           <Routes>
             <Route
               path="/"
-              element={<CountriesSection isDarkMode={isDarkMode} countries={countries} isLoading={isLoading} error={error} />} />
+              element={<CountriesSection isDarkMode={isDarkMode} countries={countries} isLoading={isLoading} error={error} input={input} />} />
             <Route
               path="/country/:countryName"
               element={<CountryCard isDarkMode={isDarkMode} countries={countries} isLoading={isLoading} error={error} />} />
